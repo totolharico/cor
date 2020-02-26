@@ -1,3 +1,4 @@
+
 #include "asm.h"
 #include "op.h"
 
@@ -14,31 +15,33 @@ void	get_no_name_label(t_stack *stack)
 		ft_lstadd_back(&(stack->label_list), new);
 }
 
-void		get_label(t_stack *stack, char **line)
+void	label(t_stack *stack, char **line)
 {
 	t_list	*new;   
 	t_label	label;
-    	int		i; 
+	int		i; 
 
 	i = 0;
+	if (**line == '\n')
+		return ;
+	ft_bzero(&label, sizeof(t_label));
+	new = ft_lstnew(&label, sizeof(t_label));
 	while (is_label_char(*line[i]) == TRUE)
 		i++;
-	if (*line[i] != ':')
-		return (i);
-	ft_bzero(&label, sizeof(t_label));
-	label.name = ft_strndup(*line, i);
-	if (label.name == NULL)
-		stack->error == MALLOC_ERR;
-	new = ft_lstnew(&label, sizeof(t_label));
-	if (new == NULL)
+	if (*line[i++] == ':')
+	{
+		label.name = ft_strndup(*line, i);
+		*line += i;
+		if (label.name == NULL)
+			stack->error = MALLOC_ERR;
+	}
+	if (new == NULL || stack->error != NO_ERR)
 	{
 		stack->error == MALLOC_ERR;
-		return (i);
+		return ;
 	}
 	ft_lstadd_back(&(stack->label_list), new);
-	stack->cur_label = new;  
-	stack->name_label = 1;
-	return (i);
+	stack->cur_label = new;
 }
 
 int8_t	found_op_code(char **line)
@@ -78,7 +81,7 @@ void	get_arg(t_stack *stack, char **line)
 		found_arg(stack, **line)
 }
 
-void	creat_op_list(t_stack *stack, char **line)
+void	get_op(t_stack *stack, char **line)
 {
 	t_list		*new;
 	t_op		op;
@@ -93,32 +96,24 @@ void	creat_op_list(t_stack *stack, char **line)
 	new = ft_lstnew(&op, sizeof(t_op));
 	if (new == NULL)
 	{
-		stack->error == MALLOC_ERR;
+		stack->error = MALLOC_ERR;
 		return ;
 	}
 	ft_lstadd_back(&(stack->cur_label->content->op_list), new);
 	get_arg(&op, line);
 	
-
 }
 
-void	get_process(t_stack *stack, char *line)
+void	get_process(t_stack *stack, char **line)
 {
 	int		i;
 
-	if (*line == '\n')
+	label(stack, line);
+	while (**line == '\t' && **line == ' ')
+		(*line)++;
+	if (**line == '\n' || stack->error != NO_ERR)
 		return ;
-	if (is_label_char(*line) == TRUE)
-		i = get_label(stack, &line);
-	if (stack->name_label == 0)
-		get_no_name_label(stack);
-	line += i;
-	while (*line == '\t' && *line == ' ')
-		line++;
-	if (stack->error != NO_ERR)
-		return ;
-	if (stack->name_label == 0)
-		creat_op_list(stack, &line);
+	get_op(stack, &line);
 }
 
 void	get_name(t_stack *stack, char *line)
