@@ -4,7 +4,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-# include "libft.h"
+# include "../libft/includes/libft.h"
 # include <stdint.h>
 # include <limits.h>
 
@@ -19,13 +19,13 @@
 */
 
 # define NO_ERR				0x00000000
-# define BAD_FORMAT			0x00000001
+# define NAME_ERR			0x00000001
 
 /*
 **** name error
 */
 
-# define NAME_ERR			0x00000010
+# define COMMENT_ERR			0x00000010
 
 /*
 **** Rooms error
@@ -45,11 +45,9 @@
 // **** Type of errors
 // */
 
-// # define ANTS_ERR			0x00010000
-// # define ROOMS_ERR			0x00020000
-// # define LINKS_ERR			0x00040000
-// # define PRE_PROCESS_ERR	0x00100000
-// # define PROCESS_ERR		0x00200000
+# define OP_ERR				0x00010000
+# define ARG_ERR			0x00020000
+
 
 /*
 **** Critical errors
@@ -67,23 +65,6 @@
 /*
 **** op_code
 */
-
-# define LIVE 				0x01
-# define LD 				0x02
-# define ST 				0x03
-# define ADD 				0x04
-# define SUB 				0x05
-# define AND				0x06
-# define OR					0x07
-# define XOR 				0x08
-# define ZJMP 				0x09
-# define LDI 				0x0a
-# define STI 				0x0b
-# define FORK 				0x0c
-# define LLD1 				0x0d
-# define LLDI 				0x0e
-# define LFORK 				0x0f
-# define AFF 				0x10
 
 
 enum				e_state
@@ -113,7 +94,8 @@ typedef struct 		s_label
 typedef struct		s_stack
 {
 	char			*champion_name;
-	int				name_label;
+	uint32_t		error;
+	size_t			oct;
 	enum e_state	state;
 	char			*comment;
 	t_list			*cur_label;
@@ -121,11 +103,22 @@ typedef struct		s_stack
 }					t_stack;
 
 
+typedef int8_t		(*t_parsing)(t_stack *, char **);
+int8_t				get_name(t_stack *stack, char **line);
+int8_t				get_comment(t_stack *stack, char **line);
+int8_t				get_process(t_stack *stack, char **line);
+
+int					asm_cor(int ac, char **av);
+
+void				get_arg(t_stack *stack, char **line);
+t_arg				*parse_arg(t_stack *stack, char **line, size_t i);
+void				check_no_arg(t_stack *stack, size_t arg);
+void				check_ind(t_stack *stack, size_t arg);
+void				check_dir(t_stack *stack, size_t arg);
+void				check_reg(t_stack *stack, size_t arg);
 
 
-
-
-
+#endif
 
 
 

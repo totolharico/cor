@@ -1,17 +1,30 @@
 
-#include "asm.h"
-#include "op.h"
+#include "../includes/asm.h"
+#include "../libft/includes/libft.h"
+
+int		is_label_char(char c)
+{
+	char	*tab;
+
+	tab = "abcdefghijklmnopqrstuvwxyz_0123456789";
+	while (*tab)
+	{
+		if (c == *tab)
+			return (1);
+		tab++;
+	}
+	return (0);
+}
 
 void	label(t_stack *stack, char **line)
 {
-	t_list	*new;   
+	t_list	*new;
 	t_label	label;
 	int		i; 
 
 	i = 0;
 	ft_bzero(&label, sizeof(t_label));
-	new = ft_lstnew(&label, sizeof(t_label));
-	while (is_label_char(*line[i]) == TRUE)
+	while (is_label_char(*line[i]) == 1)
 		i++;
 	if (*line[i++] == ':')
 	{
@@ -20,22 +33,44 @@ void	label(t_stack *stack, char **line)
 		if (label.name == NULL)
 			stack->error = MALLOC_ERR;
 	}
+	label.oct = stack->oct;
+	new = ft_lstnew(&label, sizeof(t_label));
 	if (new == NULL || stack->error != NO_ERR)
 	{
-		stack->error == MALLOC_ERR;
+		stack->error = MALLOC_ERR;
 		return ;
 	}
 	ft_lstadd_back(&(stack->label_list), new);
 	stack->cur_label = new;
 }
 
-int8_t	found_op_code(char **line)
+void	init_tab(char *tab[16])
 {
-	char 	*tab[];
+	tab[0] = "live";
+	tab[1] = "ld";
+	tab[2] = "st";
+	tab[3] = "add";
+	tab[4] = "sub";
+	tab[5] = "and";
+	tab[6] = "or";
+	tab[7] = "xor";
+	tab[8] = "zjmp";
+	tab[9] = "ldi";
+	tab[10] = "sti";
+	tab[11] = "fork";
+	tab[12] = "lld";
+	tab[13] = "lldi";
+	tab[14] = "lfork";
+	tab[15] = "aff";
+}					
+
+int8_t	found_op_code(char *line)
+{
+	char 	*tab[16];
 	int		i;
 
-	tab = {"live", "ld", "st", "add", "sub", "and", "or",
-	"xor", "zjmp", "ldi", "sti", "fork", "lld", "lldi", "lfork", "aff"};
+
+	init_tab(tab);
 	i = 0;
 	while(i < 16)
 	{
@@ -47,6 +82,8 @@ int8_t	found_op_code(char **line)
 	}
 	return (0);
 }
+
+
 
 
 void	get_op(t_stack *stack, char **line)
@@ -75,6 +112,8 @@ void	get_process(t_stack *stack, char **line)
 	if (**line == '\n')
 		return ;
 	label(stack, line);
+	if (**line == '\n')
+		return ;
 	if (stack->error != NO_ERR)
 		return ;
 	get_op(stack, &line);
@@ -102,10 +141,10 @@ void	get_name(t_stack *stack, char **line)
 	stack->name = ft_strndup(*line, --i);
 	if (stack->name == NULL)
 		stack->error = MALLOC_ERR;
-	stack->state = GET_STR_COMMENT;
+	stack->state = GET_COMMENT;
 }
 
-void		get_str_comment(t_stack *stack, char **line)
+void		get_comment(t_stack *stack, char **line)
 {
 	int		i;
 
@@ -141,16 +180,18 @@ int8_t		parser(char *file, t_stack *stack)
 	int					fd;
 
 	if ((fd = open(file, O_RDONLY) == -1))
+		stack = FILE_ERR;
 	stack->state = GET_NAME;
 	while (stack->error == NO_ER)
 	{
-		if ((ret = get_next_line(fd, &line)))
-		{
+		if ((ret = get_next_line(fd, &line)) > 0)
 			parsing[stack->state](stack, &line);
-		}
+		else if (ret == -1)
+			stack->error = READ_ERR;
 		else
 			break ;
 	}
+	
 
 }
 
@@ -159,4 +200,17 @@ int		asm_cor(int ac, char **av)
 	t_stack		stack;
 
 	ft_bzero(&stack, sizeof(t_stack));
+	stack.oct = 2192;
+	parser(av[1], &stack);
 }
+
+
+
+
+
+
+
+
+
+
+
