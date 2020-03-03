@@ -2,7 +2,7 @@
 #include "../includes/asm.h"
 #include "../libft/includes/libft.h"
 
-int		is_label_char(char c)
+static int		is_label_char(char c)
 {
 	char	*tab;
 
@@ -41,7 +41,7 @@ void	label(t_stack *stack, char **line)
 		return ;
 	}
 	ft_lstadd_back(&(stack->label_list), new);
-	stack->cur_label = new;
+	stack->cur_label = &label;
 }
 
 void	init_tab(char *tab[16])
@@ -64,7 +64,7 @@ void	init_tab(char *tab[16])
 	tab[15] = "aff";
 }					
 
-int8_t	found_op_code(char *line)
+int8_t	found_op_code(char **line)
 {
 	char 	*tab[16];
 	int		i;
@@ -76,7 +76,7 @@ int8_t	found_op_code(char *line)
 	{
 		if (ft_strncmp(*line, tab[i], ft_strlen(tab[i])) == 0)
 		{
-			*line += ft_strlen(tab[i]);
+			(*line) += ft_strlen(tab[i]);
 			return (i + 1);
 		}
 	}
@@ -100,7 +100,7 @@ void	get_op(t_stack *stack, char **line)
 		return ;
 	}
 	while (**line == ' ' && **line == '\t')
-		*line++;
+		(*line)++;
 	get_arg(stack, line);
 	
 }
@@ -116,7 +116,7 @@ void	get_process(t_stack *stack, char **line)
 		return ;
 	if (stack->error != NO_ERR)
 		return ;
-	get_op(stack, &line);
+	get_op(stack, line);
 }
 
 void	get_name(t_stack *stack, char **line)
@@ -124,11 +124,18 @@ void	get_name(t_stack *stack, char **line)
 	int		i;
 
 	i = 0;
-	if (ft_strncmp(".name", line, 6) != 0)
+	while (**line == ' ' && **line == '\t')
+		(*line)++;
+	if (**line == '\n')
+		return ;
+	if (ft_strncmp(".name", *line, 5) != 0)
+	{
 		stack->error = NAME_ERR;
+		return ;
+	}
 	*line += 6;
 	while (**line == ' ' && **line == '\t')
-		*line++;
+		(*line)++;
 	if (*(*line++) != '"')
 		stack->error = NAME_ERR;
 	while (ft_isascii(*line[i]) > 0 && *line[i] != '"')
@@ -136,12 +143,13 @@ void	get_name(t_stack *stack, char **line)
 	while (*line[i] == '"')
 		i++;
 	i--;
-	if (line[i] != '"' && i > PROG_NAME_LENGTH)
+	if (*line[i] != '"' && i > 128)
 		stack->error = NAME_ERR;
-	stack->name = ft_strndup(*line, --i);
-	if (stack->name == NULL)
+	stack->champion_name = ft_strndup(*line, --i);
+	if (stack->champion_name == NULL)
 		stack->error = MALLOC_ERR;
 	stack->state = GET_COMMENT;
+
 }
 
 void		get_comment(t_stack *stack, char **line)
@@ -149,11 +157,16 @@ void		get_comment(t_stack *stack, char **line)
 	int		i;
 
 	i = 0;
-	if (ft_strncmp(".comment ", line, 9) != 0)
+	printf("%s\n", "coucou");
+	while (**line == ' ' && **line == '\t')
+		(*line)++;
+	if (**line == '\n')
+		return ;
+	if (ft_strncmp(".comment ", *line, 9) != 0)
 		stack->error = COMMENT_ERR;
 	line += 9;
 	while (**line == ' ' && **line == '\t')
-		*line++;
+		(*line)++;
 	if (*(*line++) != '"')
 		stack->error = COMMENT_ERR;
 	while (ft_isascii(*line[i]) > 0 && *line[i] != '"')
@@ -161,12 +174,13 @@ void		get_comment(t_stack *stack, char **line)
 	while (*line[i] == '"')
 		i++;
 	i--;
-	if (line[i] != '"' && i > PROG_NAME_LENGTH)
+	if (*line[i] != '"' && i > 2048)
 		stack->error = COMMENT_ERR;
 	stack->comment = ft_strndup(*line, --i);
-	if (stack->name == NULL)
+	if (stack->comment == NULL)
 		stack->error = MALLOC_ERR;
 	stack->state = GET_PROCESS;
+	
 }
 
 
@@ -180,28 +194,34 @@ int8_t		parser(char *file, t_stack *stack)
 	int					fd;
 
 	if ((fd = open(file, O_RDONLY) == -1))
-		stack = FILE_ERR;
+		stack->error = FILE_ERR;
+	printf("fd:%d\n", fd);
 	stack->state = GET_NAME;
-	while (stack->error == NO_ER)
+	while (stack->error == NO_ERR)
 	{
 		if ((ret = get_next_line(fd, &line)) > 0)
+		{
+			printf("line:%s\n", line);
 			parsing[stack->state](stack, &line);
+		}
 		else if (ret == -1)
 			stack->error = READ_ERR;
 		else
 			break ;
 	}
 	
-
+	return (1);
 }
 
-int		asm_cor(int ac, char **av)
+int		main(int ac, char **av)
 {
 	t_stack		stack;
 
 	ft_bzero(&stack, sizeof(t_stack));
 	stack.oct = 2192;
 	parser(av[1], &stack);
+	printf("%s\n", stack.champion_name);
+	return (0);
 }
 
 

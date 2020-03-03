@@ -76,8 +76,10 @@ enum				e_state
 
 typedef struct 		s_arg
 {
+	char			*label;
 	size_t			type;
 	size_t			oct;
+	size_t			no_arg;
 	int				value;
 }					t_arg;
 
@@ -98,24 +100,25 @@ typedef struct		s_stack
 	size_t			oct;
 	enum e_state	state;
 	char			*comment;
-	t_list			*cur_label;
+	t_label			*cur_label;
+	t_arg			*cur_arg;
 	t_list			*label_list;
 }					t_stack;
 
 
-typedef int8_t		(*t_parsing)(t_stack *, char **);
-int8_t				get_name(t_stack *stack, char **line);
-int8_t				get_comment(t_stack *stack, char **line);
-int8_t				get_process(t_stack *stack, char **line);
+typedef void		(*t_parsing)(t_stack *, char **);
+void				get_name(t_stack *stack, char **line);
+void				get_comment(t_stack *stack, char **line);
+void				get_process(t_stack *stack, char **line);
 
 int					asm_cor(int ac, char **av);
 
 void				get_arg(t_stack *stack, char **line);
-t_arg				*parse_arg(t_stack *stack, char **line, size_t i);
+t_arg				parse_arg(t_stack *stack, char **line, size_t i);
 void				check_no_arg(t_stack *stack, size_t arg);
 void				check_ind(t_stack *stack, size_t arg);
-void				check_dir(t_stack *stack, size_t arg);
-void				check_reg(t_stack *stack, size_t arg);
+void				check_dir(t_stack *stack, size_t arg, char **line);
+void				check_reg(t_stack *stack, size_t arg, char **line);
 
 
 #endif
