@@ -2,7 +2,7 @@ int		is_label_char(char c)
 {
 	char	tab[26];
 
-	tab = LABEL_CHARS;
+	tab = "";
 	while (tab != NULL)
 	{
 		if (c == *tab)

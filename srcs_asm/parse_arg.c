@@ -42,7 +42,7 @@ void	parse_dir_ind(t_arg *arg, char **line, size_t type)
 
 
 
-t_arg	*parse_arg(t_stack *stack, char **line, size_t i)
+t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 {
 	t_arg	arg;
 
@@ -60,11 +60,12 @@ t_arg	*parse_arg(t_stack *stack, char **line, size_t i)
 	else if (**line == '#' || **line == '\n')
 	{
 		check_no_arg(stack, i);
+		&arg = NULL;
 	}
 	else
 	{
 		check_ind(stack, i);
 		parse_dir_ind(&arg, line, 3);
 	}
-	return (&arg);
+	return (arg);
 }
