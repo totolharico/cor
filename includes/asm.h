@@ -88,6 +88,7 @@ typedef struct 		s_label
 {
 	char			*name;
 	size_t			oct;
+	size_t			encod_b;
 	size_t			op_code;
 	t_list			*arg_list;
 }					t_label;
@@ -98,6 +99,7 @@ typedef struct		s_stack
 	char			*champion_name;
 	uint32_t		error;
 	size_t			oct;
+	size_t			n_line;
 	enum e_state	state;
 	char			*comment;
 	t_label			*cur_label;

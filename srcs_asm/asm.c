@@ -89,11 +89,18 @@ int8_t			found_op_code(char **line)
 }
 
 
+void    update_oct(t_stack *stack, size_t op)
+{    
+	if (op != 1 && op != 9 && op != 12 && op != 15)
+		stack->cur_label->encod_b = 1;
+	stack->oct = stack->cur_label->encod_b + 1;
+}
 
 
 void			get_op(t_stack *stack, char **line)
 {
 	stack->cur_label->op_code = found_op_code(line);
+	update_oct(stack, stack->cur_label->op_code);
 	if (stack->cur_label->op_code == 0)
 	{
 		stack->error = OP_ERR;
@@ -209,15 +216,15 @@ int8_t			parser(char *file, t_stack *stack)
 	stack->state = GET_NAME;
 	while (stack->error == NO_ERR)
 	{
+		stack->n_line++;
 		if ((ret = get_next_line(fd, &line)) > 0)
-		{
 			parsing[stack->state](stack, &line);
-		}
 		else if (ret == -1)
 			stack->error = READ_ERR;
 		else
 			break ;
 	}
+	if ()
 	//printf("%s\n", stack->cur_label->name);
 	
 	return (1);
