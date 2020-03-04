@@ -16,22 +16,22 @@ static int		is_label_char(char c)
 	return (0);
 }
 
-void	parse_reg(t_stack *stack, char **line)
+void	parse_reg(t_stack *stack, char **line, t_arg *arg)
 {
-	(*line)++;
 	if (**line < '0' && **line > '5')
 	{
 		stack->error = ARG_ERR;
 		return ; 
 	}
-	stack->cur_arg->type = 1;
-	stack->cur_arg->value = ft_atoi(*line);	
+	arg->type = 1;
+	arg->value = ft_atoi(*line);
+	//printf("----------------%c\n", **line);	
 	(*line)++;
 }
 
 
 
-void	parse_dir_ind(t_stack *stack, char **line, size_t type)
+void	parse_dir_ind(t_stack *stack, char **line, t_arg *arg)
 {
 	int		i;
 
@@ -39,22 +39,21 @@ void	parse_dir_ind(t_stack *stack, char **line, size_t type)
 	if (**line == ':')
 	{
 		(*line)++;
-		while (is_label_char(*line[i]) == TRUE)
+		while (is_label_char((*line)[i]) == TRUE)
 			i++;
-		stack->cur_arg->label = ft_strndup(*line, i);
-		if (stack->cur_arg->label == NULL)
+		arg->label = ft_strndup(*line, i);
+		if (arg->label == NULL)
 			stack->error = MALLOC_ERR;
 		*line += i;
 	}
-	else if ((**line > '0' && **line < '9') || ((*(*line++) == '-') && (**line > '0' && *(*line--) < '9')))
+	else if ((**line >= '0' && **line <= '9') || ((*(*line++) == '-') && (**line >= '0' && *(*line--) <= '9')))
 	{
-		stack->cur_arg->value = ft_atoi(*line);
-		while ((**line > '0' && **line < '9') && **line == '-')
+		arg->value = ft_atoi(*line);
+		while ((**line >= '0' && **line <= '9') || **line == '-')
 			(*line)++;
 	}
 	else
 		stack->error = ARG_ERR;
-	stack->cur_arg->type = type;
 }
 
 
@@ -64,19 +63,18 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 	t_arg	arg;
 
 	ft_bzero(&arg, sizeof(t_arg));
-	stack->cur_arg = &arg;
-	return arg;
 	if (**line == 'r')
 	{
 		check_reg(stack, i, line);
-		parse_reg(stack, line);
+		parse_reg(stack, line, &arg);
 	}
 	else if (**line == '%')
 	{
 		check_dir(stack, i, line);
-		parse_dir_ind(stack, &(*line++), 2);
+		parse_dir_ind(stack, &(*line++), &arg);
+		arg.type = 2;
 	}
-	else if (**line == '#' || **line == '\n')
+	else if (**line == '#' || **line == '\0')
 	{
 		check_no_arg(stack, i);
 		arg.no_arg = 1;
@@ -84,9 +82,9 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 	else
 	{
 		check_ind(stack, i);
-		parse_dir_ind(stack, line, 3);
+		parse_dir_ind(stack, line, &arg);
+		arg.type = 3;
 	}
-	
 	return (arg);
 }
 
@@ -117,14 +115,18 @@ void	get_arg(t_stack *stack, char **line)
 	{
 		if (**line == ',')
 			(*line)++;
-		else
-			arg = parse_arg(stack, line, i);
+		while (**line == '\t' || **line == ' ')
+			(*line)++;
+		arg = parse_arg(stack, line, i);
 		if (stack->error != NO_ERR)
 			break ;
 		if (arg.no_arg == 0)
 			add_arg(stack, stack->cur_label, &arg);
-		while (**line == '\t' || **line == ' ')
-			(*line)++;
+		
 	}
 }
+
+
+
+
 

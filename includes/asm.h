@@ -101,7 +101,6 @@ typedef struct		s_stack
 	enum e_state	state;
 	char			*comment;
 	t_label			*cur_label;
-	t_arg			*cur_arg;
 	t_list			*label_list;
 }					t_stack;
 

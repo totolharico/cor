@@ -41,7 +41,7 @@ void			label(t_stack *stack, char **line)
 		return ;
 	}
 	ft_lstadd_back(&(stack->label_list), new);
-	stack->cur_label = &label;
+	stack->cur_label = (t_label*)new->content;
 }
 
 void			init_tab(char *tab[16])
@@ -94,7 +94,6 @@ int8_t			found_op_code(char **line)
 void			get_op(t_stack *stack, char **line)
 {
 	stack->cur_label->op_code = found_op_code(line);
-	printf("code:%zu\n", stack->cur_label->op_code);
 	if (stack->cur_label->op_code == 0)
 	{
 		stack->error = OP_ERR;
@@ -237,20 +236,22 @@ int				main(int ac, char **av)
 	parser(av[1], &stack);
 	printf("name:%s\n", stack.champion_name);
 	printf("comment:%s\n", stack.comment);
+	
 	label_list = stack.label_list;
 	
 	while (label_list)
 	{
 		printf("\n");
 		label = (t_label*)label_list->content;
+		printf("label:%s\n", label->name);
 		printf("opcode:%zu\n", label->op_code);
 		arg_list = label->arg_list;
 		while (arg_list)
 		{
 			arg = (t_arg*)arg_list->content;
-			printf("label:%s\n", arg->label);
+			printf("labelcall:%s\n", arg->label);
 			printf("type:%zu\n", arg->type);
-			printf("valur%d\n", arg->value);
+			printf("value:%d\n", arg->value);
 			printf("\n");
 			arg_list = arg_list->next;
 		}
