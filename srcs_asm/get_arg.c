@@ -65,6 +65,7 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 
 	ft_bzero(&arg, sizeof(t_arg));
 	stack->cur_arg = &arg;
+	return arg;
 	if (**line == 'r')
 	{
 		check_reg(stack, i, line);
@@ -85,6 +86,7 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 		check_ind(stack, i);
 		parse_dir_ind(stack, line, 3);
 	}
+	
 	return (arg);
 }
 
@@ -121,7 +123,7 @@ void	get_arg(t_stack *stack, char **line)
 			break ;
 		if (arg.no_arg == 0)
 			add_arg(stack, stack->cur_label, &arg);
-		while (**line == '\t' && **line == ' ')
+		while (**line == '\t' || **line == ' ')
 			(*line)++;
 	}
 }
