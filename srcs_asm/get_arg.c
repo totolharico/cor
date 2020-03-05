@@ -73,7 +73,7 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 		parse_dir_ind(stack, &(*line++), &arg);
 		arg.type = 2;
 	}
-	else if (**line == '#' || **line == '\0')
+	else if (**line == '#' || **line == '\0' || **line == ';')
 	{
 		check_no_arg(stack, i);
 		arg.no_arg = 1;

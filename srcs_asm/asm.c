@@ -93,7 +93,7 @@ void    update_oct(t_stack *stack, size_t op)
 {    
 	if (op != 1 && op != 9 && op != 12 && op != 15)
 		stack->cur_label->encod_b = 1;
-	stack->oct = stack->cur_label->encod_b + 1;
+	stack->oct = stack->oct + stack->cur_label->encod_b + 1;
 }
 
 
@@ -119,13 +119,15 @@ void			get_op(t_stack *stack, char **line)
 
 void			get_process(t_stack *stack, char **line)
 {
-	while (**line == '\t' || **line == ' ')
+	while (**line == ' ' || **line == '\t')
 		(*line)++;
-	if (**line == '\0' || **line == '#')
+	if (**line == '\0' || **line == '#' || **line == ';')
 		return ;
 	label(stack, line);
 	if (**line == '\0' || stack->error != NO_ERR)
 		return ;
+	while (**line == ' ' || **line == '\t')
+		(*line)++;
 	get_op(stack, line);
 }
 
@@ -134,7 +136,7 @@ int				count_name_comment(char *str)
 	int		i;
 
 	i = 0;
-	while (str[i] && str[i] != '\n' && str[i] != '#')
+	while (str[i] && str[i] != '\n' && str[i] != '#' && str[i] != ';')
 		i++;
 	while (str[i] == ' ' || str[i] == '\t')
 		i--;
@@ -306,25 +308,13 @@ int				main(int ac, char **av)
 	}
 	if (init_file(&out_file, av[1]) == FALSE)
 		return (1);
-	fill_header(&out_file, &stack);
-	if (fill_opcode(&out_file, stack) == FALSE)
-	{
-		asm_erno(0, LABEL_CALL_ERR);
-		return (1);
-	}
-	real_prog_size = out_file.total_size - SIZE_HEADER;
-	nb_to_binary(&out_file, INFO_PROG, out_file.prog_size, real_prog_size);
-	out_file.total_size -= INFO_PROG;
-	write(out_file.fd, out_file.content, out_file.total_size);
-	ft_printf("Writing output program to %s\n", out_file.name);
-	
 	// label_list = stack.label_list;
-	
 	// while (label_list)
 	// {
 	// 	printf("\n");
 	// 	label = (t_label*)label_list->content;
 	// 	printf("label:%s\n", label->name);
+	// 	printf("oct:%zu\n", label->oct);
 	// 	printf("opcode:%zu\n", label->op_code);
 	// 	arg_list = label->arg_list;
 	// 	while (arg_list)
@@ -338,6 +328,19 @@ int				main(int ac, char **av)
 	// 	}
 	// 	label_list = label_list->next;
 	// }
+	fill_header(&out_file, &stack);
+	if (fill_opcode(&out_file, stack) == FALSE)
+	{
+		asm_erno(0, LABEL_CALL_ERR);
+		return (1);
+	}
+	real_prog_size = out_file.total_size - SIZE_HEADER;
+	nb_to_binary(&out_file, INFO_PROG, out_file.prog_size, real_prog_size);
+	out_file.total_size -= INFO_PROG;
+	write(out_file.fd, out_file.content, out_file.total_size);
+	ft_printf("Writing output program to %s\n", out_file.name);
+	
+
 	return (0);
 }
 
