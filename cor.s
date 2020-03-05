@@ -1,5 +1,5 @@
-.name       """fevzfv"cdcqsd""c"
-.comment    """This city needs m"e""
+.name       "coucou"
+.comment    "This city needs m"
 
 loop:
         sti r1, %:live, %1

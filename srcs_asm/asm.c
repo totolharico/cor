@@ -224,46 +224,120 @@ int8_t			parser(char *file, t_stack *stack)
 		else
 			break ;
 	}
-	if ()
+	if (stack->error != NO_ERR)
+		return (-1);
 	//printf("%s\n", stack->cur_label->name);
-	
-	return (1);
+	return (0);
 }
+
+
+void		fill_header(t_cor_file *out_file, t_stack *stack)
+{
+	// write magic number//
+	nb_to_binary(out_file, sizeof(COREWAR_EXEC_MAGIC), out_file->total_size, COREWAR_EXEC_MAGIC);
+	// write name//
+	copy_string(out_file->content, stack->champion_name,  PROG_NAME_LENGTH, &(out_file->total_size));
+	// padding //
+	copy_string(out_file->content, EMPTY,  PADDING, &(out_file->total_size));
+	// Prog size  = 0 pour l'instant + indice de prog size stocke
+	// pour s'assurer que c'est pas la taille du programme mais bien son indice//
+	out_file->prog_size = out_file->total_size;
+	copy_string(out_file->content, EMPTY,  INFO_PROG, &(out_file->total_size));
+	//// write comment ///// 
+	copy_string(out_file->content, stack->comment,  COMMENT_LENGTH, &(out_file->total_size));
+	// padding //
+	copy_string(out_file->content, EMPTY,  PADDING, &(out_file->total_size));
+}
+
+int		fill_opcode(t_cor_file *out_file, t_stack stack)
+{
+	t_label		*label;
+	t_list		*label_list;
+	int			i;
+
+	label_list = stack.label_list;
+	i = out_file->total_size;
+	while (label_list != NULL)
+	{
+		label = (t_label*)label_list->content;
+		if (label->op_code != 0)
+		{
+			write_in_file(out_file, i, label->op_code);
+			if (label->encod_b)
+				write_in_file(out_file, ++i, encoding_byte(label));
+			i++;
+			if (write_op_values(out_file, &i, label, stack) == FALSE)
+				return (FALSE);
+		}
+		label_list = label_list->next;
+	}
+	return (TRUE);
+}
+
+// t_label		*find_firt_label(t_list *label)
+// {
+// 	t_label		*label;
+
+// 	while (label_list)
+// 	{
+// 		label = (t_label*)label_list->content;
+// 		if (label->op_code != 0)
+// 			return (label);
+// 		label_list = label_list->next;
+// 	}
+// }
 
 int				main(int ac, char **av)
 {
 	t_stack		stack;
-	t_list		*label_list;
-	t_list		*arg_list;
-	t_arg       *arg;
-	t_label     *label;
+	t_cor_file	out_file;
+	int			real_prog_size;
+	// t_list		*label_list;
+	// t_list		*arg_list;
+	// t_arg       *arg;
+	// t_label     *label;
 
 	ft_bzero(&stack, sizeof(t_stack));
 	stack.oct = 2192;
-	parser(av[1], &stack);
-	printf("name:%s\n", stack.champion_name);
-	printf("comment:%s\n", stack.comment);
-	
-	label_list = stack.label_list;
-	
-	while (label_list)
+	if (parser(av[1], &stack) == -1)
 	{
-		printf("\n");
-		label = (t_label*)label_list->content;
-		printf("label:%s\n", label->name);
-		printf("opcode:%zu\n", label->op_code);
-		arg_list = label->arg_list;
-		while (arg_list)
-		{
-			arg = (t_arg*)arg_list->content;
-			printf("labelcall:%s\n", arg->label);
-			printf("type:%zu\n", arg->type);
-			printf("value:%d\n", arg->value);
-			printf("\n");
-			arg_list = arg_list->next;
-		}
-		label_list = label_list->next;
+		asm_erno(stack.n_line, stack.error);
+		return (1);
 	}
+	if (init_file(&out_file, av[1]) == FALSE)
+		return (1);
+	fill_header(&out_file, &stack);
+	if (fill_opcode(&out_file, stack) == FALSE)
+	{
+		asm_erno(0, LABEL_CALL_ERR);
+		return (1);
+	}
+	real_prog_size = out_file.total_size - SIZE_HEADER;
+	nb_to_binary(&out_file, INFO_PROG, out_file.prog_size, real_prog_size);
+	out_file.total_size -= INFO_PROG;
+	write(out_file.fd, out_file.content, out_file.total_size);
+	ft_printf("Writing output program to %s\n", out_file.name);
+	
+	// label_list = stack.label_list;
+	
+	// while (label_list)
+	// {
+	// 	printf("\n");
+	// 	label = (t_label*)label_list->content;
+	// 	printf("label:%s\n", label->name);
+	// 	printf("opcode:%zu\n", label->op_code);
+	// 	arg_list = label->arg_list;
+	// 	while (arg_list)
+	// 	{
+	// 		arg = (t_arg*)arg_list->content;
+	// 		printf("labelcall:%s\n", arg->label);
+	// 		printf("type:%zu\n", arg->type);
+	// 		printf("value:%d\n", arg->value);
+	// 		printf("\n");
+	// 		arg_list = arg_list->next;
+	// 	}
+	// 	label_list = label_list->next;
+	// }
 	return (0);
 }
 
