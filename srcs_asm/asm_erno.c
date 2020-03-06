@@ -1,12 +1,10 @@
 #include "../includes/asm.h"
 #include "../libft/includes/libft.h"
 
-void	asm_erno(int nb, uint32_t error)
+void	asm_erno(char *line, uint32_t error)
 {
-	char 	*line;
 	char	*output;
 
-	line = ft_itoa(nb);
 	if (line == NULL)
 		output = "MALLOC ERROR";
 	else if (error & NAME_ERR)

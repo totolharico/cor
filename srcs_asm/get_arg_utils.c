@@ -1,21 +1,6 @@
 #include "../includes/asm.h"
 #include "../libft/includes/libft.h"
 
- 
-static int		is_label_char(char c)
-{
-	char	*tab;
-
-	tab = "abcdefghijklmnopqrstuvwxyz_0123456789";
-	while (*tab)
-	{
-		if (c == *tab)
-			return (1);
-		tab++;
-	}
-	return (0);
-}
-
 void	parse_reg(t_stack *stack, char **line, t_arg *arg)
 {
 	if (**line < '0' && **line > '5')
@@ -118,30 +103,6 @@ void	add_oct(t_stack *stack, t_arg *arg)
 	else
 		arg->oct = 4;
 	stack->oct += arg->oct;
-}
-
-void	get_arg(t_stack *stack, char **line)
-{
-	int		i;
-	t_arg	arg;
-
-	i = 0;
-	if (**line == ',')
-		stack->error = ARG_ERR;
-	while (++i <= 3 && stack->error == NO_ERR)
-	{
-		if (**line == ',')
-			(*line)++;
-		while (**line == '\t' || **line == ' ')
-			(*line)++;
-		arg = parse_arg(stack, line, i);
-		if (stack->error != NO_ERR)
-			break ;
-		add_oct(stack, &arg);
-		if (arg.no_arg == 0)
-			add_arg(stack, stack->cur_label, &arg);
-		
-	}
 }
 
 

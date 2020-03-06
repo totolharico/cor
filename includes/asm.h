@@ -132,39 +132,52 @@ typedef struct 		s_cor_file
 }					t_cor_file;
 
 
+int					main(int ac, char **av);
+
 
 typedef void		(*t_parsing)(t_stack *, char **);
 void				get_name(t_stack *stack, char **line);
 void				get_comment(t_stack *stack, char **line);
 void				get_process(t_stack *stack, char **line);
 
-int					asm_cor(int ac, char **av);
 
-void				get_arg(t_stack *stack, char **line);
+int					count_name_comment(char *str);
+
+
+void				label(t_stack *stack, char **line);
+int					is_label_char(char c);
+void    			update_oct(t_stack *stack, size_t op);
+int8_t				found_op_code(char **line);
+
+
 t_arg				parse_arg(t_stack *stack, char **line, size_t i);
+void				parse_dir_ind(t_stack *stack, char **line, t_arg *arg);
+void				parse_reg(t_stack *stack, char **line, t_arg *arg);
+void				add_arg(t_stack *stack, t_label *label, t_arg *arg);
+void				add_oct(t_stack *stack, t_arg *arg);
+
+
 void				check_no_arg(t_stack *stack, size_t arg);
 void				check_ind(t_stack *stack, size_t arg);
 void				check_dir(t_stack *stack, size_t arg, char **line);
 void				check_reg(t_stack *stack, size_t arg, char **line);
 
-void				asm_erno(int nb, uint32_t error);
+
+void				asm_erno(char *line, uint32_t error);
+
+
+int					init_file(t_cor_file *out_file, char *source_file);
+
+
+int					fill_opcode(t_cor_file *out_file, t_stack *stack);
 
 
 
-/////////////////////// asm utils   //////////////////////////
-int			init_file(t_cor_file *out_file, char *source_file);
-char		*ft_stricat(char *dest, const char *src, int indx_dest);
-void		nb_to_binary(t_cor_file *out_file, int octets, int indx, long nb);
-long		count_bits(long nb);
-void		write_in_file(t_cor_file *out_file, int indx, int n);
-void		copy_string(char *dest, char *src, int size, int *indx);
-/////////////////////// op_code utils   //////////////////////////
-int			find_opcode(char *string);
-int			encoding_byte(t_label *label);
-int			write_op_values(t_cor_file *out_file, int *i, t_label *label, t_stack stack);
-/////////////////////// To delete   //////////////////////////
-// int			parsing_tester(t_stack *stack, int fd);
-// void		print_tester(t_stack *stack);
+char				*ft_stricat(char *dest, const char *src, int indx_dest);
+void				nb_to_binary(t_cor_file *out_file, int octets, int indx, long nb);
+long				count_bits(long nb);
+void				write_in_file(t_cor_file *out_file, int indx, int n);
+void				copy_string(char *dest, char *src, int size, int *indx);
 
 
 

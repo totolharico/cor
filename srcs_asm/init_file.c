@@ -13,7 +13,7 @@ static int		start_file(t_cor_file *out_file, char *source_file, int i)
 	out_file->fd = open(out_file->name, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (out_file->fd <= 0)
 	{
-		asm_erno(0, SOURCE_FILE_ERR);
+		asm_erno("0", SOURCE_FILE_ERR);
 		return (FALSE);
 	}
 	return (TRUE);
@@ -28,7 +28,7 @@ int		init_file(t_cor_file *out_file, char *source_file)
 			i++;
 	if (source_file[i] == '\0' || source_file[i + 1] == '\0' || source_file[i + 1] != 's' || source_file[i + 2] != '\0')
 	{
-		asm_erno(0, SOURCE_FILE_ERR);
+		asm_erno("0", SOURCE_FILE_ERR);
 		return (FALSE);
 	}
 	if (start_file(out_file, source_file, i) == FALSE)
