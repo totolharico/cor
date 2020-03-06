@@ -9,45 +9,17 @@
 # include <stdint.h>
 # include <limits.h>
 
-/*
-*****************
-***** ERROR *****
-*****************
-*/
 
-/*
-**** Generic error
-*/
 
-#define	TRUE					1
-#define	FALSE					0
+# define TRUE				1
+# define FALSE				0
 
 # define NO_ERR				0x00000000
 # define NAME_ERR			0x00000001
 
-/*
-**** name error
-*/
+# define COMMENT_ERR		0x00000010
 
-# define COMMENT_ERR			0x00000010
 
-/*
-**** Rooms error
-*/
-
-// # define INVALID_COORD		0x00000040
-// # define BAD_START_LETTER	0x00000080
-// # define MISS_ROOMS			0x00000100
-// # define SAME_NAME			0x00000200
-// # define SAME_COORD			0x00000400
-// # define START_ROOM			0x00000800
-// # define END_ROOM			0x00001000
-// # define TOO_FEW			0x00002000
-// # define UNKNOW_ROOM		0x00004000
-
-// /*
-// **** Type of errors
-// */
 
 # define OP_ERR				0x00010000
 # define ARG_ERR			0x00020000
@@ -55,32 +27,24 @@
 # define LABEL_CALL_ERR		0x00080000
 
 
-/*
-**** Critical errors
-*/
-
 # define READ_ERR			0x10000000
 # define MALLOC_ERR			0x20000000
 # define FILE_ERR			0x80000000
 
-# define IND_SIZE     2
-# define REG_SIZE     4
-# define DIR_SIZE     REG_SIZE
+# define IND_SIZE     		2
+# define REG_SIZE     		4
+# define DIR_SIZE     		REG_SIZE
 
 
-# define PROG_ASM		0
-# define MAX_SIZE_FILE	2875
-# define SIZE_HEADER	2192
-# define BITS_IN_OCTET	8
-# define PADDING		4
-# define INFO_PROG		4
-# define EMPTY			"\0"
-# define MAX_ARGS		3
-# define ALT_COMMENT_CHAR    ';'
-
-/*
-**** op_code
-*/
+# define PROG_ASM			0
+# define MAX_SIZE_FILE		2875
+# define SIZE_HEADER		2192
+# define BITS_IN_OCTET		8
+# define PADDING			4
+# define INFO_PROG			4
+# define EMPTY				"\0"
+# define MAX_ARGS			3
+# define ALT_COMMENT_CHAR   ';'
 
 
 enum				e_state
