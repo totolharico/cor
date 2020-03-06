@@ -58,6 +58,7 @@ static int		find_label(char *to_find, t_list *label_list)
 	int			oct_lab;
 
 	oct_lab = 0;
+	printf("%s\n", "coucou");
 	while (label_list != NULL)
 	{
 		label = (t_label*)label_list->content;
@@ -72,7 +73,7 @@ static int		find_label(char *to_find, t_list *label_list)
 	return (FALSE);
 }
 
-int		write_op_values(t_cor_file *out_file, int *i, t_label *label, t_stack stack)
+int		write_op_values(t_cor_file *out_file, int *i, t_label *label, t_stack *stack)
 {
 	t_arg	*arg;
 	t_list	*arg_list;
@@ -82,11 +83,12 @@ int		write_op_values(t_cor_file *out_file, int *i, t_label *label, t_stack stack
 	to_label = 0;
 	oct = 0;
 	arg_list = label->arg_list;
-	printf("%s\n", label->name);
-	printf("%zu\n", label->op_code);
+	//printf("%zu\n", label->op_code);
 	while (arg_list)
 	{	
-		
+		//printf("%s\n", label->name);
+		// //printf("%zu\n", label->op_code);
+		// printf("%s\n", "coucou");
 		arg = (t_arg*)arg_list->content;
 		if (arg->type == 1)
 		{
@@ -98,7 +100,7 @@ int		write_op_values(t_cor_file *out_file, int *i, t_label *label, t_stack stack
 		}
 		else if (arg->label != NULL)
 		{
-			to_label = find_label(arg->label, stack.label_list);
+			to_label = find_label(arg->label, stack->label_list);
 			if (to_label == FALSE)
 				return (FALSE);
 			nb_to_binary(out_file, arg->oct, *i, (to_label - label->oct));

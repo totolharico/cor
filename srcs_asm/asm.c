@@ -251,13 +251,16 @@ void		fill_header(t_cor_file *out_file, t_stack *stack)
 	copy_string(out_file->content, EMPTY,  PADDING, &(out_file->total_size));
 }
 
-int		fill_opcode(t_cor_file *out_file, t_stack stack)
+int		fill_opcode(t_cor_file *out_file, t_stack *stack)
 {
-	t_label		*label;
+
 	t_list		*label_list;
+	t_label		*label;
+	t_list		*arg_list;
+	t_arg		*arg;
 	int			i;
 
-	label_list = stack.label_list;
+	label_list = stack->label_list;
 	i = out_file->total_size;
 	while (label_list != NULL)
 	{
@@ -268,6 +271,11 @@ int		fill_opcode(t_cor_file *out_file, t_stack stack)
 			if (label->encod_b)
 				write_in_file(out_file, ++i, encoding_byte(label));
 			i++;
+
+			// arg_list = label->arg_list;
+			// arg = (t_arg*)arg_list->content;
+			// printf("%s\n", "coucou");
+			// printf("%s\n", arg->label);
 			if (write_op_values(out_file, &i, label, stack) == FALSE)
 				return (FALSE);
 		}
@@ -289,16 +297,41 @@ int		fill_opcode(t_cor_file *out_file, t_stack stack)
 // 	}
 // }
 
+// void	write_parse(t_stack *stack)
+// {
+// 	t_list		*label_list;
+// 	t_list		*arg_list;
+// 	t_arg       *arg;
+// 	t_label     *label;
+
+// 	label_list = stack->label_list;
+// 	while (label_list)
+// 	{
+// 		printf("\n");
+// 		label = (t_label*)label_list->content;
+// 		printf("label:%s\n", label->name);
+// 		printf("oct:%zu\n", label->oct);
+// 		printf("opcode:%zu\n", label->op_code);
+// 		arg_list = label->arg_list;
+// 		while (arg_list)
+// 		{
+// 			arg = (t_arg*)arg_list->content;
+// 			printf("labelcall:%s\n", arg->label);
+// 			printf("type:%zu\n", arg->type);
+// 			printf("value:%d\n", arg->value);
+// 			printf("\n");
+// 			arg_list = arg_list->next;
+// 		}
+// 		label_list = label_list->next;
+// 	}
+// }
+
 int				main(int ac, char **av)
 {
 	t_stack		stack;
 	t_cor_file	out_file;
 	int			real_prog_size;
-	// t_list		*label_list;
-	// t_list		*arg_list;
-	// t_arg       *arg;
-	// t_label     *label;
-
+	
 	ft_bzero(&stack, sizeof(t_stack));
 	stack.oct = 2192;
 	if (parser(av[1], &stack) == -1)
@@ -308,28 +341,10 @@ int				main(int ac, char **av)
 	}
 	if (init_file(&out_file, av[1]) == FALSE)
 		return (1);
-	// label_list = stack.label_list;
-	// while (label_list)
-	// {
-	// 	printf("\n");
-	// 	label = (t_label*)label_list->content;
-	// 	printf("label:%s\n", label->name);
-	// 	printf("oct:%zu\n", label->oct);
-	// 	printf("opcode:%zu\n", label->op_code);
-	// 	arg_list = label->arg_list;
-	// 	while (arg_list)
-	// 	{
-	// 		arg = (t_arg*)arg_list->content;
-	// 		printf("labelcall:%s\n", arg->label);
-	// 		printf("type:%zu\n", arg->type);
-	// 		printf("value:%d\n", arg->value);
-	// 		printf("\n");
-	// 		arg_list = arg_list->next;
-	// 	}
-	// 	label_list = label_list->next;
-	// }
+	
 	fill_header(&out_file, &stack);
-	if (fill_opcode(&out_file, stack) == FALSE)
+	//write_parse(&stack);
+	if (fill_opcode(&out_file, &stack) == FALSE)
 	{
 		asm_erno(0, LABEL_CALL_ERR);
 		return (1);
