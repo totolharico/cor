@@ -52,6 +52,7 @@ int				main(int ac, char **av)
 {
 	t_stack		stack;
 	t_cor_file	out_file;
+	t_label *label;
 	int			real_prog_size;
 	
 	ft_bzero(&stack, sizeof(t_stack));
@@ -62,6 +63,12 @@ int				main(int ac, char **av)
 		free_all(&stack);
 		return (1);
 	}
+	// while(stack.label_list)
+	// {
+	// 	label = (t_label*)stack.label_list->content;
+	// 	printf("%zu\n", label->oct);
+	// 	stack.label_list = stack.label_list->next;
+	// }
 	if (init_file(&out_file, av[1]) == FALSE)
 	{
 		free_all(&stack);

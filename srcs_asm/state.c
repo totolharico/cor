@@ -12,7 +12,14 @@ static void			get_arg(t_stack *stack, char **line)
 	while (++i <= 3 && stack->error == NO_ERR)
 	{
 		if (**line == ',')
+		{
 			(*line)++;
+			if (**line == '\0')
+			{
+				stack->error = ARG_ERR;
+				break;
+			}
+		}
 		while (**line == '\t' || **line == ' ')
 			(*line)++;
 		arg = parse_arg(stack, line, i);
@@ -21,7 +28,6 @@ static void			get_arg(t_stack *stack, char **line)
 		add_oct(stack, &arg);
 		if (arg.no_arg == 0)
 			add_arg(stack, stack->cur_label, &arg);
-		
 	}
 }
 
