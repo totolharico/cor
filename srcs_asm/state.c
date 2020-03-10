@@ -60,10 +60,10 @@ void			get_process(t_stack *stack, char **line)
 	if (**line == '\0' || **line == '#' || **line == ';')
 		return ;
 	label(stack, line);
-	if (**line == '\0' || stack->error != NO_ERR)
-		return ;
 	while (**line == ' ' || **line == '\t')
 		(*line)++;
+	if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
+		return ;
 	get_op(stack, line);
 }
 
