@@ -21,9 +21,9 @@ void	asm_erno(char *line, uint32_t error)
 		output = ft_strjoin("MALLOC ERROR, line: ", line);
 	else if (error & NAME_ERR)
 		output = "FILE ERROR";
-	else if (SOURCE_FILE_ERR)
+	else if (error & SOURCE_FILE_ERR)
 		output = "SOURCE FILE ERROR";
-	else if (LABEL_CALL_ERR)
+	else if (error & LABEL_CALL_ERR)
 		output = "LABEL_CALL_ERROR";
 	if (output == NULL)
 		output = "MALLOC ERROR";
