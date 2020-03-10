@@ -79,6 +79,8 @@ typedef struct		s_stack
 	char			*champion_name;
 	uint32_t		error;
 	size_t			oct;
+	int				in_progress;
+	int				get_tag;
 	int				n_line;
 	enum e_state	state;
 	char			*comment;
@@ -105,7 +107,9 @@ void				get_comment(t_stack *stack, char **line);
 void				get_process(t_stack *stack, char **line);
 
 
-int					count_name_comment(char *str);
+void				parse_name_comment(t_stack *stack, char *str, char **str2);
+void				get_tag_name(t_stack *stack, char **str);
+void				get_tag_comment(t_stack *stack, char **str);
 
 
 void				label(t_stack *stack, char **line);

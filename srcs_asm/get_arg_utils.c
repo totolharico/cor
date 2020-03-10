@@ -3,13 +3,16 @@
 
 void	parse_reg(t_stack *stack, char **line, t_arg *arg)
 {
-	if (**line < '0' && **line > '5')
+	int		nb;
+
+	nb = ft_atoi(*line);
+	if (nb < 0 && nb > 16)
 	{
 		stack->error = ARG_ERR;
 		return ; 
 	}
 	arg->type = 1;
-	arg->value = ft_atol(*line);
+	arg->value = nb;
 	(*line)++;
 }
 

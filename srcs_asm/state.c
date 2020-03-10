@@ -63,61 +63,56 @@ void			get_process(t_stack *stack, char **line)
 
 void			get_comment(t_stack *stack, char **line)
 {
-	int		i;
-
-	while (**line == ' ' || **line == '\t')
-		(*line)++;
-	if (**line == '\0')
+	if (stack->get_tag == 0)
+	{
+		get_tag_comment(stack, line);
+		if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
+			return ;
+	}
+	parse_name_comment(stack, *line, &stack->comment);
+	if (stack->error != NO_ERR)
 		return ;
-	if (ft_strncmp(".comment", *line, 8) != 0)
+	if (ft_strlen(stack->comment) > 2048)
 	{
 		stack->error = COMMENT_ERR;
 		return ;
 	}
-	*line += 8;
-	while (**line == ' ' || **line == '\t')
-		(*line)++;
-	if (*(*line)++ != '"')
-		stack->error = COMMENT_ERR;
-	i = count_name_comment(*line);
-	if ((*line)[i] != '"' && i > 2048 && stack->error != NO_ERR)
-	{
-		stack->error = COMMENT_ERR;
-		return ;
-	}
-	stack->comment = ft_strndup(*line, --i);
-	if (stack->comment == NULL)
-		stack->error = MALLOC_ERR;
-	stack->state = GET_PROCESS;
+	if (stack->in_progress == 0)
+		stack->state = GET_PROCESS;
 }
 
 
 void			get_name(t_stack *stack, char **line)
 {
-	int		i;
-
-	while (**line == ' ' || **line == '\t')
-		(*line)++;
-	if (**line == '\0')
+	if (stack->get_tag == 0)
+	{
+		get_tag_name(stack, line);
+		if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
+			return ;
+	}
+	parse_name_comment(stack, *line, &stack->champion_name);
+	if (stack->error != NO_ERR)
 		return ;
-	if (ft_strncmp(".name", *line, 5) != 0)
+	if (ft_strlen(stack->champion_name) > 128)
 	{
 		stack->error = NAME_ERR;
 		return ;
 	}
-	*line += 5;
-	while (**line == ' ' || **line == '\t')
-		(*line)++;
-	if (*(*line)++ != '"')
-		stack->error = NAME_ERR;
-	i = count_name_comment(*line);
-	if ((*line)[i] != '"' && i > 128 && stack->error != NO_ERR)
+	if (stack->in_progress == 0)
 	{
-		stack->error = NAME_ERR;
-		return ;
+		stack->state = GET_COMMENT;
+		stack->get_tag = 0;
 	}
-	stack->champion_name = ft_strndup(*line, --i);
-	if (stack->champion_name == NULL)
-		stack->error = MALLOC_ERR;
-	stack->state = GET_COMMENT;
 }
+
+
+
+
+
+
+
+
+
+
+
+
