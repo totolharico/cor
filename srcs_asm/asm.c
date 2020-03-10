@@ -59,14 +59,19 @@ int				main(int ac, char **av)
 	if (parser(av[1], &stack) == -1)
 	{
 		asm_erno(ft_itoa(stack.n_line), stack.error);
+		free_all(&stack);
 		return (1);
 	}
 	if (init_file(&out_file, av[1]) == FALSE)
+	{
+		free_all(&stack);
 		return (1);
+	}
 	fill_header(&out_file, &stack);
 	if (fill_opcode(&out_file, &stack) == FALSE)
 	{
 		asm_erno("0", LABEL_CALL_ERR);
+		free_all(&stack);
 		return (1);
 	}
 	real_prog_size = out_file.total_size - SIZE_HEADER;
@@ -74,6 +79,7 @@ int				main(int ac, char **av)
 	out_file.total_size -= INFO_PROG;
 	write(out_file.fd, out_file.content, out_file.total_size);
 	ft_printf("Writing output program to %s\n", out_file.name);
+	free_all(&stack);
 	return (0);
 }
 

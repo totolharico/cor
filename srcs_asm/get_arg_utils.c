@@ -30,7 +30,7 @@ void	parse_dir_ind(t_stack *stack, char **line, t_arg *arg)
 			stack->error = MALLOC_ERR;
 		*line += i;
 	}
-	else if ((**line >= '0' && **line <= '9') || ((*(*line++) == '-') && (**line >= '0' && *(*line--) <= '9')))
+	else if ((**line >= '0' && **line <= '9') || (((*(*line)++) == '-') && (**line >= '0' && (*(*line)--) <= '9')))
 	{
 		arg->value = ft_atol(*line);
 		while ((**line >= '0' && **line <= '9') || **line == '-')
@@ -47,6 +47,7 @@ t_arg	parse_arg(t_stack *stack, char **line, size_t i)
 	t_arg	arg;
 
 	ft_bzero(&arg, sizeof(t_arg));
+
 	if (**line == 'r')
 	{
 		check_reg(stack, i, line);

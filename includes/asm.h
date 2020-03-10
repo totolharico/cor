@@ -135,7 +135,7 @@ int					init_file(t_cor_file *out_file, char *source_file);
 
 int					fill_opcode(t_cor_file *out_file, t_stack *stack);
 
-
+void				free_all(t_stack *stack);
 
 char				*ft_stricat(char *dest, const char *src, int indx_dest);
 void				nb_to_binary(t_cor_file *out_file, int octets, int indx, long nb);
