@@ -7,14 +7,20 @@ void	asm_erno(char *line, uint32_t error)
 
 	if (line == NULL)
 		output = "MALLOC ERROR";
+	else if (error & BAD_COMMENT)
+		output = ft_strjoin("BAD COMMENT, line: ", line);
 	else if (error & NAME_ERR)
 		output = ft_strjoin("NAME ERROR, line: ", line);
+	else if (error & MISSING_QUOTE)
+		output = "MISSING QUOTE";
 	else if (error & COMMENT_ERR)
 		output = ft_strjoin("COMMENT ERROR, line: ", line);
 	else if (error & OP_ERR)
 		output = ft_strjoin("OP ERROR, line: ", line);
 	else if (error & ARG_ERR)
 		output = ft_strjoin("ARG ERROR, line: ", line);
+	else if (error & TAG_ERR)
+		output = ft_strjoin("TAG ERROR, line: ", line);
 	else if (error & READ_ERR)
 		output = "READ ERROR";
 	else if (error & MALLOC_ERR)

@@ -65,54 +65,57 @@ void			get_process(t_stack *stack, char **line)
 	if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
 		return ;
 	get_op(stack, line);
+	check_end(stack, *line);
 }
 
-void			get_comment(t_stack *stack, char **line)
+static void				get_tag(t_stack *stack, char **line)
 {
-	if (stack->get_tag == 0)
+	if (cmp_tag(line, ".name") == TRUE && !stack->champion_name)
 	{
-		get_tag_comment(stack, line);
-		if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
+		stack->get_name = 1;
+		parse_name_comment(stack, line, &stack->champion_name, &stack->get_name);
+		if (ft_strlen(stack->champion_name) > 128)
+			stack->error = NAME_ERR;
+	}
+	else if (cmp_tag(line, ".comment") == TRUE && !stack->comment)
+	{
+		stack->get_comment = 1;
+		parse_name_comment(stack, line, &stack->comment, &stack->get_comment);
+		if (ft_strlen(stack->comment) > 2048)
+			stack->error = COMMENT_ERR;
+	}
+	else
+		stack->error = TAG_ERR;
+}
+
+void				get_name_or_comment(t_stack *stack, char **line)
+{
+	if (!stack->get_tag)
+	{
+		while (**line == ' ' || **line == '\t')
+			(*line)++;
+		if (**line == '\0' || **line == '#' || **line == ';')
 			return ;
-	}
-	parse_name_comment(stack, *line, &stack->comment);
-	if (stack->error != NO_ERR)
+		get_tag(stack, line);
+		if (stack->comment && stack->champion_name && !stack->in_progress)
+			stack->state = GET_PROCESS;
 		return ;
-	if (ft_strlen(stack->comment) > 2048)
+	}
+	if (stack->get_name)
 	{
-		stack->error = COMMENT_ERR;
-		return ;
+		parse_name_comment(stack, line, &stack->champion_name, &stack->get_name);
+		if (ft_strlen(stack->champion_name) > 128)
+			stack->error = NAME_ERR;
 	}
-	if (stack->in_progress == 0)
+	else if (stack->get_comment)
+	{
+		parse_name_comment(stack, line, &stack->comment, &stack->get_comment);
+		if (ft_strlen(stack->comment) > 2048)
+			stack->error = COMMENT_ERR;
+	}
+	if (stack->comment && stack->champion_name && !stack->in_progress)
 		stack->state = GET_PROCESS;
 }
-
-
-void			get_name(t_stack *stack, char **line)
-{
-	if (stack->get_tag == 0)
-	{
-		get_tag_name(stack, line);
-		if (**line == '\0' || **line == '#' || **line == ';' || stack->error != NO_ERR)
-			return ;
-	}
-	parse_name_comment(stack, *line, &stack->champion_name);
-	if (stack->error != NO_ERR)
-		return ;
-	if (ft_strlen(stack->champion_name) > 128)
-	{
-		stack->error = NAME_ERR;
-		return ;
-	}
-	if (stack->in_progress == 0)
-	{
-		stack->state = GET_COMMENT;
-		stack->get_tag = 0;
-	}
-}
-
-
-
 
 
 

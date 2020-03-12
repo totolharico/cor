@@ -21,16 +21,17 @@ static void		fill_header(t_cor_file *out_file, t_stack *stack)
 }
 
 
-static int8_t			parser(char *file, t_stack *stack)
+
+int8_t			parser(char *file, t_stack *stack)
 {
-	static t_parsing	parsing[3] = {get_name, get_comment, get_process};
+	static t_parsing	parsing[2] = {get_name_or_comment, get_process};
 	char				*line;
 	int					ret;
 	int					fd;
 
 	if ((fd = open(file, O_RDONLY)) == -1)
 		stack->error = FILE_ERR;
-	stack->state = GET_NAME;
+	stack->state = GET_NAME_COMMENT;
 	while (stack->error == NO_ERR)
 	{
 		stack->n_line++;
@@ -41,6 +42,8 @@ static int8_t			parser(char *file, t_stack *stack)
 		else
 			break ;
 	}
+	if (stack->state != GET_PROCESS && stack->error == NO_ERR)
+		stack->error = MISSING_QUOTE;
 	if (stack->error != NO_ERR)
 		return (-1);;
 	return (0);

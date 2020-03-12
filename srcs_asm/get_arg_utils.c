@@ -16,6 +16,36 @@ void	parse_reg(t_stack *stack, char **line, t_arg *arg)
 	(*line)++;
 }
 
+static int		ft_atolong(char *str, t_arg *arg)
+{
+	long	neg;
+	long	nb;
+	long	bits;
+
+	neg = 1;
+	nb = 0;
+	bits = 0;
+	while (*str == ' ' || *str == '\f' || *str == '\t'
+			|| *str == '\n' || *str == '\r' || *str == '\v')
+		str++;
+	if (*str == '-')
+		neg = -1;
+	if (*str == '-' || *str == '+')
+		str++;
+	while (ft_isdigit((long)*str))
+	{
+		nb = 10 * nb + *str - 48;
+		bits = count_bits(nb);
+		if (bits >= 63)
+		{
+			arg->value = 4294967294;
+			return (TRUE);
+		}
+		str++;
+	}
+	arg->value = nb * neg;
+	return (TRUE);
+}
 
 
 void	parse_dir_ind(t_stack *stack, char **line, t_arg *arg)
@@ -35,7 +65,7 @@ void	parse_dir_ind(t_stack *stack, char **line, t_arg *arg)
 	}
 	else if ((**line >= '0' && **line <= '9') || (((*(*line)++) == '-') && (**line >= '0' && (*(*line)--) <= '9')))
 	{
-		arg->value = ft_atol(*line);
+		arg->value = ft_atolong(*line, arg);
 		while ((**line >= '0' && **line <= '9') || **line == '-')
 			(*line)++;
 	}

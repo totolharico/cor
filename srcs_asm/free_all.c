@@ -14,6 +14,10 @@ void		free_all(t_stack *stack)
 	t_arg	*arg;
 
 	label_list = stack->label_list;
+	if (stack->champion_name)
+		free(stack->champion_name);
+	if (stack->comment)
+		free(stack->comment);
 	while (label_list)
 	{
 		label = (t_label*)label_list->content;

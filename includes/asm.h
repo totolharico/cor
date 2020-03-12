@@ -15,9 +15,12 @@
 # define FALSE				0
 
 # define NO_ERR				0x00000000
-# define NAME_ERR			0x00000001
+# define TAG_ERR			0x00000001
+# define BAD_COMMENT		0x00000002
+# define MISSING_QUOTE		0x00000004
 
-# define COMMENT_ERR		0x00000010
+# define NAME_ERR			0x00000010
+# define COMMENT_ERR		0x00000020
 
 
 
@@ -49,8 +52,7 @@
 
 enum				e_state
 {
-	GET_NAME,
-	GET_COMMENT,
+	GET_NAME_COMMENT,
 	GET_PROCESS,
 };
 
@@ -60,7 +62,7 @@ typedef struct 		s_arg
 	size_t			type;
 	size_t			oct;
 	size_t			no_arg;
-	int				value;
+	long			value;
 }					t_arg;
 
 
@@ -81,6 +83,8 @@ typedef struct		s_stack
 	size_t			oct;
 	int				in_progress;
 	int				get_tag;
+	int				get_name;
+	int				get_comment;
 	int				n_line;
 	enum e_state	state;
 	char			*comment;
@@ -102,14 +106,13 @@ int					main(int ac, char **av);
 
 
 typedef void		(*t_parsing)(t_stack *, char **);
-void				get_name(t_stack *stack, char **line);
-void				get_comment(t_stack *stack, char **line);
+void				get_name_or_comment(t_stack *stack, char **line);
 void				get_process(t_stack *stack, char **line);
 
 
-void				parse_name_comment(t_stack *stack, char *str, char **str2);
-void				get_tag_name(t_stack *stack, char **str);
-void				get_tag_comment(t_stack *stack, char **str);
+void				parse_name_comment(t_stack *stack, char **str, char **str2, int *mark);
+int					cmp_tag(char **line, char *str);
+
 
 
 void				label(t_stack *stack, char **line);
@@ -142,6 +145,7 @@ int					fill_opcode(t_cor_file *out_file, t_stack *stack);
 void				free_all(t_stack *stack);
 
 char				*ft_stricat(char *dest, const char *src, int indx_dest);
+void				check_end(t_stack *stack, char *line);
 void				nb_to_binary(t_cor_file *out_file, int octets, int indx, long nb);
 long				count_bits(long nb);
 void				write_in_file(t_cor_file *out_file, int indx, int n);

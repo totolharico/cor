@@ -7,7 +7,7 @@ void	check_no_arg(t_stack *stack, size_t arg)
 
 
 	op = stack->cur_label->op_code;
-	if (arg == 1
+	if ((arg == 1)
 			|| (arg == 2 && (op != 1 && op != 9 && op != 12 && op != 15 && op != 16))
 				|| (arg == 3 && (op != 1 && op != 2 && op != 3 && op != 9 && op != 12 && op != 13 && op != 15 && op != 16)))
 	{
@@ -24,7 +24,7 @@ void	check_ind(t_stack *stack, size_t arg)
 	op = stack->cur_label->op_code;
 	if ((arg == 1 && (op != 2 && op != 6 && op != 7 && op != 8 && op != 10 && op != 13 && op != 14))
 			|| (arg == 2 && (op != 3 && op != 6 && op != 7 && op != 8 && op != 11))
-				|| arg == 3)
+				|| (arg == 3))
 	{
 		stack->error = ARG_ERR;
 	}

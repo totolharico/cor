@@ -29,6 +29,14 @@ char	*ft_stricat(char *dest, const char *src, int indx_dest)
 	return (dest);
 }
 
+void				check_end(t_stack *stack, char *line)
+{
+	while (*line == ' ' || *line == '\t')
+		line++;
+	if (*line != '\0' && *line != '#' && *line != ';')
+		stack->error = BAD_COMMENT;
+}
+
 
 void	write_in_file(t_cor_file *out_file, int indx, int n)
 {
